@@ -12,7 +12,7 @@ const names = [
   "Jayabaya",
 ]
 
-const admin = [
+const nameAdmin = [
   "Admin",
   "Owner",
   "Imam Ganteng"
@@ -24,9 +24,15 @@ module.exports = {
     const encryptedPassword = bcrypt.hashSync(password, 10);
     const timestamp = new Date();
 
-    const role = await Role.findOne({
+    const roleCus = await Role.findOne({
       where: {
         name: "CUSTOMER",
+      }
+    })
+
+    const roleAdmin = await Role.findOne({
+      where: {
+        name: "ADMIN",
       }
     })
 
@@ -34,33 +40,24 @@ module.exports = {
       name,
       email: `${name.toLowerCase()}@binar.co.id`,
       encryptedPassword,
-      roleId: role.id, 
+      roleId: roleCus.id, 
       createdAt: timestamp,
       updatedAt: timestamp,
     }))
-    await queryInterface.bulkInsert('Users', users, {});
-  },
 
-  async up (queryInterface, Sequelize) {
-    const password = "123456";
-    const encryptedPassword = bcrypt.hashSync(password, 10);
-    const timestamp = new Date();
-
-    const role = await Role.findOne({
-      where: {
-        name: "ADMIN",
-      }
-    })
-
-    const users = admin.map((admin) => ({
-      name: admin,
-      email: `${admin.toLowerCase()}@binar.co.id`,
+    const admin = nameAdmin.map((name) => ({
+      name,
+      email: `${name.toLowerCase()}@binar.co.id`,
       encryptedPassword,
-      roleId: role.id, 
+      roleId: roleAdmin.id, 
       createdAt: timestamp,
       updatedAt: timestamp,
     }))
-    await queryInterface.bulkInsert('Users', users, {});
+
+    console.log(users, admin)
+    console.log(typeof(users))
+    const account = [...users, ...admin]
+    await queryInterface.bulkInsert('Users', account, {});
   },
 
   async down (queryInterface, Sequelize) {
